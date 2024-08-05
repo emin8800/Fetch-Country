@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Country Detail</title>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="nav">
+                <h1>Country Details</h1>
+                <a href="index.html" class="back-button">
+                    <i class="fa-solid fa-arrow-left"></i> Back
+                </a>
+            </div>
+        </div>
+
+        <div class="country-detail" id="country-detail">
+           
+        </div>
+    </div>
+
+    <script >
+        document.addEventListener("DOMContentLoaded", async function() {
+   
+    let urlParams = new URLSearchParams(window.location.search);
+    let countryName = urlParams.get('name');
+    
+    if (countryName) {
+        try {
+         
+            let response = await fetch(`https://restcountries.com/v3.1/name/${countryName}?fullText=true`);
+            let data = await response.json();
+            
+            if (data.length > 0) {
+                let country = data[0];
+                
+               
+                let countryDetail = document.getElementById("country-detail");
+                countryDetail.innerHTML = `
+                    <div class="flag">
+                        <img src="${country.flags.png}" alt="${country.name.official} Flag">
+                        <h2>${country.name.official}</h2>
+                        <div class="info">
+                            <h3>Population: <p>${country.population.toLocaleString()}</p></h3>
+                            <h3>Region: <p>${country.region}</p></h3>
+                            <h3>Subregion: <p>${country.subregion || 'N/A'}</p></h3>
+                            <h3>Capital: <p>${country.capital ? country.capital[0] : 'N/A'}</p></h3>
+                            <h3>Languages: <p>${Object.values(country.languages || {}).join(', ')}</p></h3>
+                            <h3>Currencies: <p>${Object.values(country.currencies || {}).map(currency => currency.name).join(', ')}</p></h3>
+                        </div>
+                    </div>
+                `;
+            } else {
+                document.getElementById("country-detail").innerHTML = `<p>Country not found</p>`;
+            }
+        } catch (error) {
+            console.error('Error fetching country details:', error);
+            document.getElementById("country-detail").innerHTML = `<p>Unable to fetch country details</p>`;
+        }
+    } else {
+        document.getElementById("country-detail").innerHTML = `<p>No country selected</p>`;
+    }
+});
+
+    </script>
+</body>
+</html>
